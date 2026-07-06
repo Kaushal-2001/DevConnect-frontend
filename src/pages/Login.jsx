@@ -4,23 +4,39 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Code2 } from "lucide-react";
+import axios from "axios";
 
 export function Login() {
   // This just remembers whether the password should be visible or hidden.
   // false = hidden (default), true = visible
   const [showPassword, setShowPassword] = useState(false);
-  const [emailId, setEmailId] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("kaus@gmail.com");
+  const [password, setPassword] = useState("Kaus@123");
 
   function togglePasswordVisibility() {
     setShowPassword(!showPassword);
   }
 
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/login",
+        {
+          email,
+          password,
+        },
+        { withCredentials: true },
+      );
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
       {/* The Login Card */}
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8">
-
         {/* Logo */}
         <div className="mb-6 flex items-center justify-center gap-2">
           <Code2 className="h-5 w-5" />
@@ -40,7 +56,6 @@ export function Login() {
 
         {/* The actual form */}
         <form>
-
           {/* Email field */}
           <div className="mb-4">
             <Label htmlFor="email">Email</Label>
@@ -48,10 +63,10 @@ export function Login() {
               id="email"
               name="email"
               type="email"
-              value={emailId}
+              value={email}
               placeholder="kaus@gamil.com"
               onChange={(e) => {
-                setEmailId(e.target.value)
+                setEmail(e.target.value);
               }}
               required
             />
@@ -75,7 +90,7 @@ export function Login() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => {
-                  setPassword(e.target.value)
+                  setPassword(e.target.value);
                 }}
                 className="pr-10"
                 required
@@ -85,15 +100,20 @@ export function Login() {
                 onClick={togglePasswordVisibility}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
           </div>
 
           {/* Submit button */}
           <Button
-            type="submit"
+            type="button"
             className="w-full bg-gradient-to-r from-orange-400 to-amber-300 text-white"
+            onClick={handleLogin}
           >
             Log in
           </Button>
