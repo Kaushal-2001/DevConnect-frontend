@@ -5,12 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Code2 } from "lucide-react";
 
-export function Login() {
+export function Signup() {
   // This just remembers whether the password should be visible or hidden.
   // false = hidden (default), true = visible
   const [showPassword, setShowPassword] = useState(false);
-  const [emailId, setEmailId] = useState("")
-  const [password, setPassword] = useState("")
 
   function togglePasswordVisibility() {
     setShowPassword(!showPassword);
@@ -18,7 +16,8 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
-      {/* The Login Card */}
+
+      {/* Card */}
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8">
 
         {/* Logo */}
@@ -29,17 +28,29 @@ export function Login() {
 
         {/* Heading */}
         <h2 className="mb-2 text-center text-2xl font-bold">
-          Log in to your account
+          Create your account
         </h2>
         <p className="mb-6 text-center text-sm text-muted-foreground">
-          Don't have one?{" "}
-          <Link to="/signup" className="font-medium underline">
-            Sign up
+          Already have one?{" "}
+          <Link to="/login" className="font-medium underline">
+            Log in
           </Link>
         </p>
 
         {/* The actual form */}
         <form>
+
+          {/* First name + last name side by side */}
+          <div className="mb-4 grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="firstName">First name</Label>
+              <Input id="firstName" name="firstName" placeholder="Ada" required />
+            </div>
+            <div>
+              <Label htmlFor="lastName">Last name</Label>
+              <Input id="lastName" name="lastName" placeholder="Lovelace" required />
+            </div>
+          </div>
 
           {/* Email field */}
           <div className="mb-4">
@@ -48,23 +59,14 @@ export function Login() {
               id="email"
               name="email"
               type="email"
-              value={emailId}
-              placeholder="kaus@gamil.com"
-              onChange={(e) => {
-                setEmailId(e.target.value)
-              }}
+              placeholder="ada@devconnect.com"
               required
             />
           </div>
 
           {/* Password field */}
           <div className="mb-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link to="/forgot-password" className="text-xs underline">
-                Forgot password?
-              </Link>
-            </div>
+            <Label htmlFor="password">Password</Label>
 
             {/* relative wrapper so we can place the eye icon inside the input */}
             <div className="relative">
@@ -72,11 +74,7 @@ export function Login() {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                }}
+                placeholder="At least 8 characters"
                 className="pr-10"
                 required
               />
@@ -95,9 +93,13 @@ export function Login() {
             type="submit"
             className="w-full bg-gradient-to-r from-orange-400 to-amber-300 text-white"
           >
-            Log in
+            Create account
           </Button>
         </form>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          By signing up, you agree to DevConnect's Terms and Privacy Policy.
+        </p>
       </div>
     </div>
   );
