@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Code2 } from "lucide-react";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { getLoggedInUser } from "@/utils/userSlice";
+import { BASE_URL } from "@/utils/constants";
 
 export function Login() {
   // This just remembers whether the password should be visible or hidden.
@@ -13,6 +16,9 @@ export function Login() {
   const [email, setEmail] = useState("kaus@gmail.com");
   const [password, setPassword] = useState("Kaus@123");
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   function togglePasswordVisibility() {
     setShowPassword(!showPassword);
   }
@@ -20,14 +26,16 @@ export function Login() {
   const handleLogin = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:3000/login",
+        BASE_URL + "/login",
         {
           email,
           password,
         },
         { withCredentials: true },
       );
-      console.log(res);
+      console.log(res.data);
+      dispatch(getLoggedInUser(res.data))
+      navigate("/")
     } catch (err) {
       console.log(err);
     }
