@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 
 export function Navbar() {
   const user = useSelector((store) => store.user);
-  console.log(user);
   const loggedIn = !!user;
 
   return (
