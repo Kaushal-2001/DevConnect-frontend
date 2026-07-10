@@ -1,9 +1,9 @@
-import React from 'react'
+import { ProfileCard } from "@/components/ProfileCard";
 
-const Feed = () => {
+export function Feed() {
   return (
-    <div>feed</div>
-  )
+    <div className="flex justify-center p-6">
+      <ProfileCard />
+    </div>
+  );
 }
-
-export default Feed

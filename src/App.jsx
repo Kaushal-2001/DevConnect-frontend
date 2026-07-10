@@ -5,7 +5,7 @@ import Profile from "./pages/Profile";
 import { Signup } from "./pages/Signup";
 import { Provider } from "react-redux";
 import { appStore } from "./utils/appStore";
-import Feed from "./pages/Feed";
+import { Feed } from "./pages/Feed";
 
 function App() {
   return (
