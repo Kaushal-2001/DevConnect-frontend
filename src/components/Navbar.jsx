@@ -9,12 +9,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Search, Code2, User, Settings, LogOut } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { BASE_URL } from "@/utils/constants";
+import { removeUser } from "@/utils/userSlice";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export function Navbar() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const user = useSelector((store) => store.user);
   const loggedIn = !!user;
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(BASE_URL + "/logout", {}, { withCredentials: true });
+      dispatch(removeUser());
+      navigate("/login");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
@@ -42,28 +59,26 @@ export function Navbar() {
               </span>
 
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="rounded-full ring-offset-2 transition hover:ring-2 hover:ring-border">
-                    <Avatar>
-                      <AvatarImage src={user?.photoUrl} alt={user?.firstName} />
-                      <AvatarFallback>{user?.firstName}</AvatarFallback>
-                    </Avatar>
-                  </button>
+                <DropdownMenuTrigger className="rounded-full ring-offset-2 transition hover:ring-2 hover:ring-border">
+                  <Avatar>
+                    <AvatarImage src={user?.photoUrl} alt={user?.firstName} />
+                    <AvatarFallback>{user?.firstName}</AvatarFallback>
+                  </Avatar>
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent align="end">
                   <Link to="/profile">
-                  <DropdownMenuItem>
-                    <User className="h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <User className="h-4 w-4" />
+                      Profile
+                    </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem>
                     <Settings className="h-4 w-4" />
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="h-4 w-4" />
                     Logout
                   </DropdownMenuItem>
