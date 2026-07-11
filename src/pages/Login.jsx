@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Code2 } from "lucide-react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { getLoggedInUser } from "@/utils/userSlice";
+import { addUser } from "@/utils/userSlice";
 import { BASE_URL } from "@/utils/constants";
 
 export function Login() {
@@ -34,7 +34,7 @@ export function Login() {
         { withCredentials: true },
       );
       console.log(res.data);
-      dispatch(getLoggedInUser(res.data))
+      dispatch(addUser(res.data))
       navigate("/")
     } catch (err) {
       console.log(err);
