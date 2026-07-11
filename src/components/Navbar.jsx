@@ -1,8 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Code2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Search, Code2, User, Settings, LogOut } from "lucide-react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 export function Navbar() {
   const user = useSelector((store) => store.user);
@@ -11,13 +19,13 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
       <div className="flex h-16 items-center gap-4 px-6 lg:px-8">
-        <a
-          href="/"
+        <Link
+          to="/"
           className="flex shrink-0 items-center gap-2 text-foreground"
         >
           <Code2 className="h-5 w-5" />
           <span className="text-lg font-bold tracking-tight">DevConnect</span>
-        </a>
+        </Link>
 
         <div className="relative hidden flex-1 max-w-md sm:block">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -33,12 +41,34 @@ export function Navbar() {
                 Welcome, {user?.firstName}
               </span>
 
-              <button className="rounded-full ring-offset-2 transition hover:ring-2 hover:ring-border">
-                <Avatar>
-                  <AvatarImage src={user?.photoUrl} alt={user?.firstName} />
-                  <AvatarFallback>{user?.firstName}</AvatarFallback>
-                </Avatar>
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="rounded-full ring-offset-2 transition hover:ring-2 hover:ring-border">
+                    <Avatar>
+                      <AvatarImage src={user?.photoUrl} alt={user?.firstName} />
+                      <AvatarFallback>{user?.firstName}</AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end">
+                  <Link to="/profile">
+                  <DropdownMenuItem>
+                    <User className="h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem>
+                    <Settings className="h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>
