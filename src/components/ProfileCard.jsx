@@ -1,35 +1,37 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X, Check } from "lucide-react";
-
-// `profile` is expected to look like the object your backend sends back:
-// { firstName, lastName, skills, about, age, gender, photoUrl }
+import { X, Check, User as UserIcon } from "lucide-react";
 export function ProfileCard({ user }) {
   return (
-    <div className="w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card">
-      {/* Photo */}
-      <img
-        src={user.photoUrl}
-        alt={user.firstName}
-        className="h-64 w-full object-cover"
-      />
+    <div className="w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
+      {user?.photoUrl ? (
+        <img
+          src={user.photoUrl}
+          alt={user?.firstName}
+          className="h-64 w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-64 w-full items-center justify-center bg-muted">
+          <UserIcon className="h-16 w-16 text-muted-foreground" />
+        </div>
+      )}
 
       {/* Info section */}
       <div className="p-5">
         {/* Name, age, gender */}
         <h3 className="text-xl font-bold">
-          {user.firstName} {user.lastName}
+          {user?.firstName} {user?.lastName}
         </h3>
         <p className="text-sm text-muted-foreground">
-          {user.age} · {user.gender}
+          {user?.age} · {user?.gender}
         </p>
 
         {/* About */}
-        <p className="mt-3 text-sm">{user.about}</p>
+        <p className="mt-3 text-sm">{user?.about}</p>
 
         {/* Skills */}
         <div className="mt-4 flex flex-wrap gap-2">
-          {user.skills.map((skill) => (
+          {user?.skills.map((skill) => (
             <Badge key={skill} variant="secondary">
               {skill}
             </Badge>
