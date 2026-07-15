@@ -8,25 +8,35 @@ import axios from "axios";
 import { BASE_URL } from "@/utils/constants";
 import { useDispatch } from "react-redux";
 import { addUser } from "@/utils/userSlice";
+import {toast} from "sonner"
 
 export function EditProfileForm({ user }) {
   const [firstName, setFirstName] = useState(user.firstName)
-  const [lastName, setLastName] = useState(user.lastName || "");
-  const [age, setAge] = useState(user.age || "");
-  const [gender, setGender] = useState(user.gender || "");
-  const [photoUrl, setPhotoUrl] = useState(user.photoUrl || "");
-  const [about, setAbout] = useState(user.about || "");
+  const [lastName, setLastName] = useState(user.lastName);
+  const [age, setAge] = useState(user.age);
+  const [gender, setGender] = useState(user.gender);
+  const [photoUrl, setPhotoUrl] = useState(user.photoUrl);
+  const [about, setAbout] = useState(user.about);
   const [skills, setSkills] = useState(user.skills || []);
   const dispatch = useDispatch();
 
   const saveProfile = async () => {
-    const res = await axios.patch(
-      BASE_URL + "/profile/edit",
-      { firstName, lastName, age, gender, photoUrl, about, skills },
-      { withCredentials: true },
-    );
-    dispatch(addUser(res?.data));
-  };
+    try {
+      const res = await axios.patch(
+        BASE_URL + "/profile/edit",
+        { firstName, lastName, age, gender, photoUrl, about, skills },
+        { withCredentials: true },
+      );
+      dispatch(addUser(res?.data));
+      toast.success("Update successful", {
+        description: "Your profile has been updated"
+      })
+    }
+  
+  catch (err) {
+    toast.error("Something went wrong", { description: err?.response?.data || "Please try again." })
+  }
+}
 
   const handleSkillsChange = (e) => {
     const parsed = e.target.value
@@ -124,7 +134,7 @@ export function EditProfileForm({ user }) {
           </div>
 
           <Button
-            type="submit"
+            type="button"
             className="bg-gradient-to-r from-orange-400 to-amber-300 text-white"
             onClick = {saveProfile}
           >

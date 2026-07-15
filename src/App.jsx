@@ -6,6 +6,7 @@ import { Signup } from "./pages/Signup";
 import { Provider } from "react-redux";
 import { appStore } from "./utils/appStore";
 import { Feed } from "./pages/Feed";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </Provider>
+      <Toaster position="top-center" richColors closeButton />
     </>
   );
 }
