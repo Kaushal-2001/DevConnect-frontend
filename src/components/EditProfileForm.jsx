@@ -27,7 +27,7 @@ export function EditProfileForm({ user }) {
         { firstName, lastName, age, gender, photoUrl, about, skills },
         { withCredentials: true },
       );
-      dispatch(addUser(res?.data));
+      dispatch(addUser(res?.data?.data));
       toast.success("Update successful", {
         description: "Your profile has been updated"
       })
