@@ -73,6 +73,12 @@ export function Navbar() {
                       Profile
                     </DropdownMenuItem>
                   </Link>
+                  <Link to="/connections">
+                    <DropdownMenuItem>
+                      <User className="h-4 w-4" />
+                      Connections
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem>
                     <Settings className="h-4 w-4" />
                     Settings
