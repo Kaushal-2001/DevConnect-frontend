@@ -19,7 +19,7 @@ export function Connections() {
       console.log(res?.data);
     } catch (err) {
       console.log(err);
-      toast.error("Coudn't load connections");
+      toast.error("Couldn't load connections");
     }
   };
 
