@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, Code2, User, Settings, LogOut } from "lucide-react";
+import { Search, Code2, User, Users, UserPlus, Settings, LogOut } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { BASE_URL } from "@/utils/constants";
@@ -75,8 +75,14 @@ export function Navbar() {
                   </Link>
                   <Link to="/connections">
                     <DropdownMenuItem>
-                      <User className="h-4 w-4" />
+                      <Users className="h-4 w-4" />
                       Connections
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link to="/requests">
+                    <DropdownMenuItem>
+                      <UserPlus className="h-4 w-4" />
+                      Requests
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem>
