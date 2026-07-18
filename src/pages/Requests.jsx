@@ -16,7 +16,6 @@ export function Requests() {
         withCredentials: true,
       });
       dispatch(addRequests(res?.data));
-      console.log(res?.data);
     } catch (err) {
       console.log(err);
     }
@@ -28,6 +27,21 @@ export function Requests() {
 
   const request = useSelector((store) => store.request);
 
+  const reviewRequest = async (status, _id, firstName) => {
+    try {
+      const res = await axios.post(
+        BASE_URL + "/request/review/" + status + "/" + _id,
+        {},
+        { withCredentials: true },
+      );
+      console.log(res);
+      dispatch(removeRequest(_id));
+      toast.success(`Request from ${firstName} ${status}`);
+    } catch (err) {
+      toast.error(err.response.data.message);
+    }
+  };
+
   if (request && request.length === 0) {
     return (
       <div className="mx-auto max-w-xl p-6 text-center">
@@ -36,22 +50,6 @@ export function Requests() {
       </div>
     );
   }
-
-  const reviewRequest = async (status, _id, firstName) => {
-    try {
-      const res = await axios.post(
-        BASE_URL + "/request/review/" + status + "/" + _id,
-        {},
-        { withCredentials: true },
-      );
-      console.log(res)
-      dispatch(removeRequest(_id))
-      toast.success(`Request from ${firstName} ${status}`)
-    } catch (err) {
-      toast.error(err.response.data.message)
-    }
-
-  };
 
   return (
     request && (
@@ -62,7 +60,7 @@ export function Requests() {
           {request.map((request) => {
             const { firstName, lastName, age, gender, photoUrl, skills } =
               request.fromUserId;
-            
+
             return (
               <div
                 key={request._id}
@@ -100,10 +98,29 @@ export function Requests() {
 
                 {/* Actions */}
                 <div className="flex shrink-0 gap-2">
-                  <Button onClick={() => reviewRequest("rejected", request._id, request?.fromUserId?.firstName)} variant="outline" size="icon">
+                  <Button
+                    onClick={() =>
+                      reviewRequest(
+                        "rejected",
+                        request._id,
+                        request?.fromUserId?.firstName,
+                      )
+                    }
+                    variant="outline"
+                    size="icon"
+                  >
                     <X className="h-4 w-4" />
                   </Button>
-                  <Button onClick={() => reviewRequest("accepted", request._id, request?.fromUserId?.firstName)}  className="bg-gradient-to-r from-orange-400 to-amber-300 text-white">
+                  <Button
+                    onClick={() =>
+                      reviewRequest(
+                        "accepted",
+                        request._id,
+                        request?.fromUserId?.firstName,
+                      )
+                    }
+                    className="bg-gradient-to-r from-orange-400 to-amber-300 text-white"
+                  >
                     <Check className="h-4 w-4" />
                     Accept
                   </Button>

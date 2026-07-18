@@ -28,7 +28,6 @@ export function Connections() {
   }, []);
 
   const connections = useSelector((store) => store.connection);
-  console.log(connections);
 
   if (connections && connections.length === 0) {
     return (
