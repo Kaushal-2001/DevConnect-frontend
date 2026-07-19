@@ -126,4 +126,4 @@ export function Navbar() {
       <div className="h-px bg-gradient-to-r from-transparent via-amber-400/40 to-transparent" />
     </header>
   );
-}v
+}
