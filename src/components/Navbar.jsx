@@ -34,19 +34,27 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md">
       <div className="flex h-16 items-center gap-4 px-6 lg:px-8">
+        {/* Logo mark — icon in a small gradient-tinted square instead of floating loose */}
         <Link
           to="/"
-          className="flex shrink-0 items-center gap-2 text-foreground"
+          className="flex shrink-0 items-center gap-2 text-foreground transition-opacity hover:opacity-80"
         >
-          <Code2 className="h-5 w-5" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-amber-300">
+            <Code2 className="h-4 w-4 text-white" />
+          </div>
           <span className="text-lg font-bold tracking-tight">DevConnect</span>
         </Link>
 
+        {/* Search — pill-shaped, accent-colored focus ring */}
         <div className="relative hidden flex-1 max-w-md sm:block">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input type="search" placeholder="Search..." className="pl-9" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search..."
+            className="rounded-full pl-9 focus-visible:ring-2 focus-visible:ring-amber-400/50"
+          />
         </div>
 
         <div className="flex-1 sm:hidden" />
@@ -59,7 +67,7 @@ export function Navbar() {
               </span>
 
               <DropdownMenu>
-                <DropdownMenuTrigger className="rounded-full ring-offset-2 transition hover:ring-2 hover:ring-border">
+                <DropdownMenuTrigger className="rounded-full ring-offset-2 ring-offset-background transition hover:ring-2 hover:ring-amber-400/60">
                   <Avatar>
                     <AvatarImage src={user?.photoUrl} alt={user?.firstName} />
                     <AvatarFallback>{user?.firstName}</AvatarFallback>
@@ -112,6 +120,10 @@ export function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Thin gradient line instead of a flat border — ties the navbar to
+          the same accent color used throughout the app */}
+      <div className="h-px bg-gradient-to-r from-transparent via-amber-400/40 to-transparent" />
     </header>
   );
-}
+}v
