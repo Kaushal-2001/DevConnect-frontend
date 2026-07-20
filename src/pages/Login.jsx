@@ -45,9 +45,11 @@ export function Login() {
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
       {/* The Login Card */}
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8">
-        {/* Logo */}
+        {/* Logo — icon in a gradient badge, matching the Navbar */}
         <div className="mb-6 flex items-center justify-center gap-2">
-          <Code2 className="h-5 w-5" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-amber-300">
+            <Code2 className="h-4 w-4 text-white" />
+          </div>
           <span className="text-lg font-bold">DevConnect</span>
         </div>
 
@@ -57,7 +59,7 @@ export function Login() {
         </h2>
         <p className="mb-6 text-center text-sm text-muted-foreground">
           Don't have one?{" "}
-          <Link to="/signup" className="font-medium underline">
+          <Link to="/signup" className="font-medium text-amber-400 underline">
             Sign up
           </Link>
         </p>
@@ -76,6 +78,7 @@ export function Login() {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              className="focus-visible:ring-2 focus-visible:ring-amber-400/50"
               required
             />
           </div>
@@ -84,9 +87,9 @@ export function Login() {
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link to="/forgot-password" className="text-xs underline">
+              <span className="text-xs text-amber-400 underline">
                 Forgot password?
-              </Link>
+              </span>
             </div>
 
             {/* relative wrapper so we can place the eye icon inside the input */}
@@ -100,13 +103,13 @@ export function Login() {
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
-                className="pr-10"
+                className="pr-10 focus-visible:ring-2 focus-visible:ring-amber-400/50"
                 required
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-amber-400"
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
