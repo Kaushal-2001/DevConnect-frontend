@@ -8,36 +8,30 @@ import axios from "axios";
 import { BASE_URL } from "@/utils/constants";
 import { useDispatch } from "react-redux";
 import { addUser } from "@/utils/userSlice";
-import {toast} from "sonner"
 
 export function EditProfileForm({ user }) {
-  const [firstName, setFirstName] = useState(user.firstName)
-  const [lastName, setLastName] = useState(user.lastName);
-  const [age, setAge] = useState(user.age || "");
-  const [gender, setGender] = useState(user.gender);
-  const [photoUrl, setPhotoUrl] = useState(user.photoUrl);
-  const [about, setAbout] = useState(user.about);
-  const [skills, setSkills] = useState(user.skills || []);
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
+  const [age, setAge] = useState(user?.age || "");
+  const [gender, setGender] = useState(user?.gender || "");
+  const [photoUrl, setPhotoUrl] = useState(user?.photoUrl || "");
+  const [about, setAbout] = useState(user?.about || "");
+  const [skills, setSkills] = useState(user?.skills || []);
   const dispatch = useDispatch();
 
   const saveProfile = async () => {
-    try {
-      const res = await axios.patch(
-        BASE_URL + "/profile/edit",
-        { firstName, lastName, age, gender, photoUrl, about, skills },
-        { withCredentials: true },
-      );
-      dispatch(addUser(res?.data?.data));
-      toast.success("Update successful", {
-        description: "Your profile has been updated"
-      })
-    }
-  
-  catch (err) {
-    toast.error("Something went wrong", { description: err?.response?.data || "Please try again." })
-  }
-}
+    const res = await axios.patch(
+      BASE_URL + "/profile/edit",
+      { firstName, lastName, age, gender, photoUrl, about, skills },
+      { withCredentials: true },
+    );
+    dispatch(addUser(res?.data?.data));
+    console.log(res?.data?.data);
+  };
 
+  // The Skills input is typed as plain comma-separated text (e.g. "React, Node"),
+  // but `skills` itself is stored as an array — this line converts one to the
+  // other every time you type, so the array is always kept up to date.
   const handleSkillsChange = (e) => {
     const parsed = e.target.value
       .split(",")
@@ -46,7 +40,7 @@ export function EditProfileForm({ user }) {
     setSkills(parsed);
   };
 
-  return  user && (
+  return user && (
     <div className="mx-auto max-w-5xl p-6">
       <div className="grid gap-10 md:grid-cols-2">
         {/* LEFT: the form */}
@@ -134,9 +128,8 @@ export function EditProfileForm({ user }) {
           </div>
 
           <Button
-            type="button"
+            type="submit"
             className="bg-gradient-to-r from-orange-400 to-amber-300 text-white"
-            onClick = {saveProfile}
           >
             Save changes
           </Button>
