@@ -5,6 +5,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Users } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 
 export function Feed() {
   const dispatch = useDispatch();
@@ -43,7 +44,13 @@ export function Feed() {
   return (
     feed && (
       <div className="flex justify-center p-6">
-        <ProfileCard user={feed[0]} />
+        {/* grid stacking: both exiting/entering cards occupy the same cell,
+            so the grid auto-sizes to the card's natural height — no fixed height needed */}
+        <div className="grid w-full max-w-sm">
+          <AnimatePresence>
+            {feed[0] && <ProfileCard key={feed[0]._id} user={feed[0]} />}
+          </AnimatePresence>
+        </div>
       </div>
     )
   );
