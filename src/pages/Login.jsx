@@ -8,6 +8,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { addUser } from "@/utils/userSlice";
 import { BASE_URL } from "@/utils/constants";
+import { motion } from "framer-motion";
 
 export function Login() {
   // This just remembers whether the password should be visible or hidden.
@@ -43,8 +44,14 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
-      {/* The Login Card */}
-      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8">
+      {/* The Login Card — now with real depth and a fade/scale-in
+          entrance, matching Signup/ProfileCard/Navbar */}
+      <motion.div
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="w-full max-w-sm rounded-2xl border border-white/10 bg-card p-8 shadow-2xl shadow-black/40"
+      >
         {/* Logo — icon in a gradient badge, matching the Navbar */}
         <div className="mb-6 flex items-center justify-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-amber-300">
@@ -53,8 +60,8 @@ export function Login() {
           <span className="text-lg font-bold">DevConnect</span>
         </div>
 
-        {/* Heading */}
-        <h2 className="mb-2 text-center text-2xl font-bold">
+        {/* Heading — stronger size/weight contrast, matching Signup */}
+        <h2 className="mb-2 text-center text-3xl font-extrabold tracking-tight">
           Log in to your account
         </h2>
         <p className="mb-6 text-center text-sm text-muted-foreground">
@@ -120,16 +127,18 @@ export function Login() {
             </div>
           </div>
 
-          {/* Submit button */}
-          <Button
-            type="button"
-            className="w-full bg-gradient-to-r from-orange-400 to-amber-300 text-white"
-            onClick={handleLogin}
-          >
-            Log in
-          </Button>
+          {/* Submit button — slightly taller, with a hover/tap pop */}
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              type="button"
+              className="w-full bg-gradient-to-r from-orange-400 to-amber-300 py-6 text-white"
+              onClick={handleLogin}
+            >
+              Log in
+            </Button>
+          </motion.div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
