@@ -9,6 +9,7 @@ import { BASE_URL } from "@/utils/constants";
 import { useDispatch } from "react-redux";
 import { addUser } from "@/utils/userSlice";
 import {toast} from "sonner"
+import { motion } from "framer-motion";
 
 export function EditProfileForm({ user }) {
   const [firstName, setFirstName] = useState(user.firstName)
@@ -17,8 +18,19 @@ export function EditProfileForm({ user }) {
   const [gender, setGender] = useState(user.gender);
   const [photoUrl, setPhotoUrl] = useState(user.photoUrl);
   const [about, setAbout] = useState(user.about);
-  const [skills, setSkills] = useState(user.skills || []);
+  // Stored as the raw text you type, not as an array. Round-tripping through
+  // an array on every keystroke stripped the comma the moment you typed it:
+  // "React," split to ["React", ""], the empty entry got filtered out, and the
+  // input re-rendered as "React" — so a comma could never be typed.
+  const [skillsText, setSkillsText] = useState((user.skills || []).join(", "));
   const dispatch = useDispatch();
+
+  // Array form, derived on each render — used for the save payload and the
+  // preview card
+  const skills = skillsText
+    .split(",")
+    .map((skill) => skill.trim())
+    .filter((skill) => skill.length > 0);
 
   const saveProfile = async () => {
     try {
@@ -38,25 +50,38 @@ export function EditProfileForm({ user }) {
   }
 }
 
-  const handleSkillsChange = (e) => {
-    const parsed = e.target.value
-      .split(",")
-      .map((skill) => skill.trim())
-      .filter((skill) => skill.length > 0);
-    setSkills(parsed);
-  };
 
   return  user && (
-    <div className="mx-auto max-w-5xl p-6">
-      <div className="grid gap-10 md:grid-cols-2">
-        {/* LEFT: the form, now wrapped in a card to match Login/Signup */}
-        <div className="rounded-xl border border-border bg-card p-8">
-          <form>
-            <h2 className="mb-6 text-2xl font-bold">Edit profile</h2>
+    // max-w-4xl rather than 6xl — at the wider size the form column ran to
+    // ~700px, so a five-character name sat in an input wide enough for a
+    // paragraph. Fixed preview width keeps the form near ~540px.
+    <div className="mx-auto max-w-4xl px-6 py-6">
+      {/* Compact header — inline with less vertical weight so it doesn't
+          eat into the space the form and preview need */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="mb-5 flex items-baseline gap-3"
+      >
+        <h1 className="text-2xl font-extrabold tracking-tight">Your profile</h1>
+        <p className="hidden text-sm text-muted-foreground sm:block">
+          Changes appear in the preview as you type.
+        </p>
+      </motion.div>
 
+      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+        {/* LEFT: the form */}
+        <motion.div
+          initial={{ opacity: 0, y: 16, scale: 0.99 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="rounded-2xl border border-white/10 bg-card p-6 shadow-2xl shadow-black/40"
+        >
+          <form>
             {/* First name + last name side by side */}
-            <div className="mb-4 grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
+            <div className="mb-3 grid grid-cols-2 gap-3">
+              <div className="space-y-1">
                 <Label htmlFor="firstName">First name</Label>
                 <Input
                   id="firstName"
@@ -66,7 +91,7 @@ export function EditProfileForm({ user }) {
                   className="focus-visible:ring-2 focus-visible:ring-amber-400/50"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label htmlFor="lastName">Last name</Label>
                 <Input
                   id="lastName"
@@ -79,8 +104,8 @@ export function EditProfileForm({ user }) {
             </div>
 
             {/* Age + gender side by side */}
-            <div className="mb-4 grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
+            <div className="mb-3 grid grid-cols-2 gap-3">
+              <div className="space-y-1">
                 <Label htmlFor="age">Age</Label>
                 <Input
                   id="age"
@@ -91,7 +116,7 @@ export function EditProfileForm({ user }) {
                   className="focus-visible:ring-2 focus-visible:ring-amber-400/50"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 <Label htmlFor="gender">Gender</Label>
                 <Input
                   id="gender"
@@ -104,7 +129,7 @@ export function EditProfileForm({ user }) {
             </div>
 
             {/* Photo URL */}
-            <div className="mb-4 space-y-1.5">
+            <div className="mb-3 space-y-1">
               <Label htmlFor="photoUrl">Photo URL</Label>
               <Input
                 id="photoUrl"
@@ -115,8 +140,22 @@ export function EditProfileForm({ user }) {
               />
             </div>
 
+            {/* Skills — typed as plain comma-separated text; the array form
+                is derived from it above */}
+            <div className="mb-3 space-y-1">
+              <Label htmlFor="skills">Skills</Label>
+              <Input
+                id="skills"
+                name="skills"
+                value={skillsText}
+                placeholder="React, Node.js, MongoDB"
+                onChange={(e) => setSkillsText(e.target.value)}
+                className="focus-visible:ring-2 focus-visible:ring-amber-400/50"
+              />
+            </div>
+
             {/* About */}
-            <div className="mb-4 space-y-1.5">
+            <div className="mb-4 space-y-1">
               <Label htmlFor="about">About</Label>
               <Textarea
                 id="about"
@@ -124,42 +163,36 @@ export function EditProfileForm({ user }) {
                 rows={3}
                 value={about}
                 onChange={(e) => setAbout(e.target.value)}
-                className="focus-visible:ring-2 focus-visible:ring-amber-400/50"
+                className="resize-none focus-visible:ring-2 focus-visible:ring-amber-400/50"
               />
             </div>
 
-            {/* Skills — typed as comma-separated text, converted to an array
-                by handleSkillsChange on every keystroke */}
-            <div className="mb-4 space-y-1.5">
-              <Label htmlFor="skills">Skills (comma-separated)</Label>
-              <Input
-                id="skills"
-                name="skills"
-                value={skills.join(", ")}
-                onChange={handleSkillsChange}
-                className="focus-visible:ring-2 focus-visible:ring-amber-400/50"
-              />
-            </div>
-
-            <Button
-              type="button"
-              className="w-full bg-gradient-to-r from-orange-400 to-amber-300 text-white"
-              onClick = {saveProfile}
-            >
-              Save changes
-            </Button>
+            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+              <Button
+                type="button"
+                className="w-full bg-gradient-to-r from-orange-400 to-amber-300 text-white shadow-lg shadow-orange-500/20"
+                onClick = {saveProfile}
+              >
+                Save changes
+              </Button>
+            </motion.div>
           </form>
-        </div>
+        </motion.div>
 
-        {/* RIGHT: live preview, using the same ProfileCard shown in the feed */}
-        <div>
-          <h2 className="mb-6 text-2xl font-bold">Preview</h2>
-          <div className="flex justify-center">
-            <ProfileCard
-              user={{ firstName, lastName, age, gender, photoUrl, about, skills }}
-            />
-          </div>
-        </div>
+        {/* RIGHT: live preview. Uses ProfileCard's `preview` variant — a
+            static, non-interactive version at real (smaller) font sizes,
+            rather than a CSS-scaled copy of the full card. */}
+        <motion.div
+          initial={{ opacity: 0, y: 16, scale: 0.99 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
+          className="hidden lg:block"
+        >
+          <ProfileCard
+            preview
+            user={{ firstName, lastName, age, gender, photoUrl, about, skills }}
+          />
+        </motion.div>
       </div>
     </div>
   );
