@@ -12,6 +12,7 @@ import {
   Flame,
   Users,
   UserPlus,
+  User,
   Settings,
   LogOut,
   ChevronDown,
@@ -107,7 +108,9 @@ export function Navbar() {
       </Link>
 
       {/* Center nav — icon pills with an active state, replaces the buried
-          dropdown-only navigation with something visible at all times */}
+          dropdown-only navigation with something visible at all times.
+          Profile deliberately lives under the avatar on the right, not here,
+          to avoid two things in the same bar pointing at the same route. */}
       <nav className="ml-2 hidden items-center gap-1 rounded-full bg-muted/60 p-1 md:flex">
         {NAV_LINKS.map(({ to, label, icon: Icon, showBadge }) => {
           const isActive = location.pathname === to;
@@ -172,23 +175,33 @@ export function Navbar() {
               align="end"
               className="w-64 rounded-2xl border-white/5 p-2 shadow-2xl shadow-black/40"
             >
-              {/* Account header — name, photo, and greeting, like a real
-                  account menu instead of a plain list of links */}
-              <div className="flex items-center gap-3 rounded-xl bg-muted/60 p-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={user?.photoUrl} alt={user?.firstName} />
-                  <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">
-                    {user?.firstName} {user?.lastName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">View profile</p>
+              {/* Account header — now an actual link, since it says
+                  "View profile" and previously did nothing when clicked */}
+              <Link to="/profile">
+                <div className="flex items-center gap-3 rounded-xl bg-muted/60 p-3 transition hover:bg-muted">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={user?.photoUrl} alt={user?.firstName} />
+                    <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">
+                      {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      View profile
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </Link>
 
               <DropdownMenuSeparator className="my-2" />
 
+              <Link to="/profile">
+                <DropdownMenuItem className="gap-2.5 rounded-lg py-2">
+                  <User className="h-4 w-4" />
+                  Profile
+                </DropdownMenuItem>
+              </Link>
               <Link to="/connections">
                 <DropdownMenuItem className="gap-2.5 rounded-lg py-2">
                   <Users className="h-4 w-4" />
