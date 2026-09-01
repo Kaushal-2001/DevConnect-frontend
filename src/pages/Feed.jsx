@@ -1,41 +1,62 @@
 import { ProfileCard } from "@/components/ProfileCard";
-import { BASE_URL } from "@/utils/constants";
+import { BASE_URL, CARD_HEIGHT } from "@/utils/constants";
 import { addFeed } from "@/utils/feedSlice";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Users, User as UserIcon } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
-// A dimmed, blurred preview of an upcoming profile sitting behind the top card
-// so the feed reads as a deck of people. Decorative only — no drag, no click.
-function DeckCard({ user, className, scrimClass }) {
+// Where each preview sits relative to the top card. Index 0 is directly
+// behind it, index 1 behind that. Kept in one place so the top card's
+// entrance can start from the same numbers the deck ends on.
+const DECK_LAYERS = [
+  { scale: 0.95, y: -12, scrim: 0.6 },
+  { scale: 0.9, y: -24, scrim: 0.75 },
+];
+
+// A dimmed, blurred preview of an upcoming profile. Decorative only.
+function DeckCard({ user, depth }) {
+  const layer = DECK_LAYERS[depth];
+
   return (
-    <div
-      className={
-        "relative col-start-1 row-start-1 overflow-hidden rounded-2xl border border-white/10 bg-card " +
-        className
-      }
+    <motion.div
+      // self-start stops the shell stretching to the full grid row height,
+      // which was making the previews hang below the card
+      className="relative col-start-1 row-start-1 origin-top self-start overflow-hidden rounded-2xl border border-white/10 bg-card"
+      style={{ zIndex: 10 - depth }}
+      // Enters from further back, then animates forward each time the deck
+      // shifts up — that's what makes the promotion read as one motion
+      // instead of the content silently swapping
+      initial={{ scale: 0.86, y: -34, opacity: 0 }}
+      animate={{ scale: layer.scale, y: layer.y, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 260, damping: 30 }}
     >
-      {user?.photoUrl ? (
-        // scale-105 hides the soft transparent edge that blur leaves behind
-        <img
-          src={user.photoUrl}
-          alt=""
-          className="h-full w-full scale-105 object-cover blur-[3px]"
-          draggable={false}
-        />
-      ) : (
-        // Dimmer than the real card's empty state, so a photo-less profile
-        // still reads as sitting further back in the stack
-        <div className="flex h-full w-full items-center justify-center bg-muted/40">
-          <UserIcon className="h-12 w-12 text-muted-foreground/50" />
-        </div>
-      )}
-      {/* Light scrim only — enough to push it back visually, not so much that
-          it turns into a flat grey slab when the top card swipes away */}
-      <div className={"absolute inset-0 " + scrimClass} />
-    </div>
+      {/* Same height as the real card's photo, so the stack lines up */}
+      <div className={CARD_HEIGHT + " w-full"}>
+        {user?.photoUrl ? (
+          // scale-105 hides the soft transparent edge blur leaves behind
+          <img
+            src={user.photoUrl}
+            alt=""
+            className="h-full w-full scale-105 object-cover blur-[3px]"
+            draggable={false}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-muted/40">
+            <UserIcon className="h-12 w-12 text-muted-foreground/50" />
+          </div>
+        )}
+      </div>
+
+      {/* Scrim lifts as the card moves forward. Heavy at the back because a
+          portrait on a white background reads as a bright slab otherwise. */}
+      <motion.div
+        className="absolute inset-0 bg-background"
+        animate={{ opacity: layer.scrim }}
+        transition={{ duration: 0.3 }}
+      />
+    </motion.div>
   );
 }
 
@@ -86,7 +107,9 @@ export function Feed() {
 
   return (
     feed && (
-      <div className="relative flex justify-center px-6 pb-20 pt-4">
+      // overflow-x-clip stops the thrown card from adding a horizontal
+      // scrollbar. "clip" rather than "hidden" so vertical stays untouched.
+      <div className="relative flex justify-center overflow-x-clip px-6 pb-28 pt-4">
         {/* Soft accent glow behind the card. Purely decorative — gives the
             page some depth instead of a card floating on flat black. */}
         <div className="pointer-events-none absolute left-1/2 top-20 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-orange-500/10 blur-[130px]" />
@@ -99,30 +122,24 @@ export function Feed() {
             </span>
           </div>
 
-          {/* mt-8 leaves room for the stacked previews to peek above the card */}
+          {/* Every layer lives in the same grid cell (col-start-1 row-start-1)
+              so they stack instead of flowing one below the other. mt-8 leaves
+              room for the previews to peek above the top card. */}
           <div className="mt-8 grid w-full">
-            {/* origin-top keeps each shell's top edge fixed while scaling, so
-                the -translate-y values control exactly how far each one peeks */}
-            {feed[2] && (
-              <DeckCard
-                user={feed[2]}
-                className="origin-top -translate-y-6 scale-[0.90]"
-                scrimClass="bg-background/55"
-              />
-            )}
-            {feed[1] && (
-              <DeckCard
-                user={feed[1]}
-                className="origin-top -translate-y-3 scale-[0.95]"
-                scrimClass="bg-background/30"
-              />
-            )}
+            {/* Mapped rather than written out one by one, so each preview keeps
+                its key when the deck shifts. Same key means React reuses the
+                element and Framer animates it forward, instead of the content
+                silently swapping in place. */}
+            {feed.slice(1, 3).map((profile, index) => (
+              <DeckCard key={profile._id} user={profile} depth={index} />
+            ))}
 
-            <div className="col-start-1 row-start-1 z-10">
-              <AnimatePresence>
-                {feed[0] && <ProfileCard key={feed[0]._id} user={feed[0]} />}
-              </AnimatePresence>
-            </div>
+            {/* No wrapper div here on purpose — AnimatePresence renders no DOM
+                of its own, so the cards become direct grid children and the
+                exiting and entering card share one cell. */}
+            <AnimatePresence>
+              {feed[0] && <ProfileCard key={feed[0]._id} user={feed[0]} />}
+            </AnimatePresence>
           </div>
         </div>
       </div>
