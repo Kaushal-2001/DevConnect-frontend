@@ -100,12 +100,12 @@ export function ProfileCard({ user, preview = false }) {
   // Size variants — real font sizes and padding rather than a CSS transform,
   // so the preview stays crisp instead of looking squashed
   const photoHeight = preview ? "aspect-[4/5]" : CARD_HEIGHT;
-  const nameSize = preview ? "text-xl" : "text-3xl";
-  const ageSize = preview ? "text-lg" : "text-2xl";
-  // Full card leaves a strip at the bottom for the floating buttons; pb-20
-  // was sized for a much taller photo and left a large empty band, so it's
-  // been tightened to just clear them
-  const overlayPadding = preview ? "p-4" : "p-5 pb-12";
+  const nameSize = preview ? "text-lg" : "text-2xl";
+  const ageSize = preview ? "text-base" : "text-xl";
+  // Full card leaves a strip at the bottom for the floating buttons. Kept
+  // tight so the text block sits low on the photo — pushing it further up
+  // ran the name into the subject's face.
+  const overlayPadding = preview ? "p-4" : "p-5 pb-8";
 
   // The card's visible content, shared by both modes
   const cardBody = (
@@ -127,7 +127,7 @@ export function ProfileCard({ user, preview = false }) {
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(to top, rgba(20,10,5,0.95) 0%, rgba(20,10,5,0.4) 35%, rgba(20,10,5,0) 65%)",
+            "linear-gradient(to top, rgba(20,10,5,0.97) 0%, rgba(20,10,5,0.88) 28%, rgba(20,10,5,0.5) 45%, rgba(20,10,5,0) 70%)",
         }}
       />
 
@@ -153,22 +153,19 @@ export function ProfileCard({ user, preview = false }) {
           </div>
         </div>
 
-        {/* Only render when there's a real bio. The backend defaults this to
-            a prompt aimed at the profile's owner, which shouldn't show to
-            people browsing the feed — an empty space reads better than a card
-            telling a stranger to fill in their about section. */}
-        {user?.about && user.about.trim() !== "Please add the about section" && (
-          <p className={"text-sm leading-relaxed text-white/90 " + (preview ? "mt-2 line-clamp-2" : "mt-3 line-clamp-3")}>
-            {user.about}
-          </p>
-        )}
+        {/* Bio deliberately isn't shown on the card face. It made the text
+            block tall enough to run into the subject's face, and no amount of
+            padding or scrim tuning fixed that — the volume of content was the
+            problem. Tinder does the same thing: the swipe card carries a name
+            and a couple of short lines, with the bio behind a detail view.
+            Skills are the more decision-relevant signal here anyway. */}
 
-        <div className={"flex flex-wrap gap-2 " + (preview ? "mt-2" : "mt-3")}>
+        <div className={"flex flex-wrap gap-1.5 " + (preview ? "mt-2" : "mt-3")}>
           {user?.skills?.slice(0, 4).map((skill) => (
             <Badge
               key={skill}
               variant="secondary"
-              className="rounded-full border-0 bg-white/15 px-3 py-1 font-medium text-white backdrop-blur-sm"
+              className="rounded-full border-0 bg-white/15 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm"
             >
               {skill}
             </Badge>
@@ -176,7 +173,7 @@ export function ProfileCard({ user, preview = false }) {
           {user?.skills?.length > 4 && (
             <Badge
               variant="outline"
-              className="rounded-full border-white/30 px-3 py-1 text-white"
+              className="rounded-full border-white/30 px-2.5 py-0.5 text-xs text-white"
             >
               +{user.skills.length - 4} more
             </Badge>
@@ -248,12 +245,14 @@ export function ProfileCard({ user, preview = false }) {
         {cardBody}
       </motion.div>
 
-      {/* Floating action buttons, overlapping the card's bottom edge. They sit
-          outside the draggable card so they fade out as it moves rather than
-          travelling off-screen with it. */}
+      {/* Action buttons sit fully below the card rather than overlapping it —
+          at -bottom-9 they covered the skill badges and the subject's chin,
+          and adding bottom padding to fix that pushed the text up into the
+          face instead. They stay outside the draggable card so they fade as
+          it moves rather than travelling off-screen with it. */}
       <motion.div
         style={{ opacity: controlsOpacity }}
-        className="absolute inset-x-0 -bottom-9 z-20 flex justify-center gap-8"
+        className="absolute inset-x-0 -bottom-16 z-20 flex justify-center gap-8"
       >
         {/* Each button sits in a column with a caption underneath, so a
             first-time user doesn't have to guess what the icons mean */}
