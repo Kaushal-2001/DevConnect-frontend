@@ -15,7 +15,7 @@ const DECK_LAYERS = [
   { scale: 0.9, y: -24, scrim: 0.75 },
 ];
 
-// A dimmed, blurred preview of an upcoming profile. Decorative only.
+// A dimmed, blurred prevfsdiew of an upcoming profile. Decorative only.
 function DeckCard({ user, depth }) {
   const layer = DECK_LAYERS[depth];
 
@@ -110,9 +110,31 @@ export function Feed() {
       // overflow-x-clip stops the thrown card from adding a horizontal
       // scrollbar. "clip" rather than "hidden" so vertical stays untouched.
       <div className="relative flex justify-center overflow-x-clip px-6 pb-28 pt-4">
-        {/* Soft accent glow behind the card. Purely decorative — gives the
-            page some depth instead of a card floating on flat black. */}
-        <div className="pointer-events-none absolute left-1/2 top-20 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-orange-500/10 blur-[130px]" />
+        {/* Dot grid — gives the empty space texture instead of flat black.
+            The mask fades it out toward the edges and behind the card, so it
+            never competes with the content sitting on top of it. */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+            maskImage:
+              "radial-gradient(ellipse 70% 60% at 50% 40%, transparent 20%, black 70%, transparent 100%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 70% 60% at 50% 40%, transparent 20%, black 70%, transparent 100%)",
+            opacity: 0.2,
+          }}
+        />
+
+        {/* Wide ambient glow. Much larger and fainter than before — at 420px
+            it sat entirely behind the card on desktop, so none of it was
+            actually visible. */}
+        <div className="pointer-events-none absolute left-1/2 top-24 h-[900px] w-[900px] -translate-x-1/2 rounded-full bg-orange-500/[0.07] blur-[180px]" />
+
+        {/* Second, offset glow in a cooler tone. Two light sources read as
+            depth; one centered blob reads as a smudge. */}
+        <div className="pointer-events-none absolute left-[15%] top-1/3 h-[500px] w-[500px] rounded-full bg-indigo-500/[0.05] blur-[150px]" />
 
         <div className="relative w-full max-w-sm">
           {/* Position counter — tells the user how far through the deck they are */}
@@ -141,6 +163,14 @@ export function Feed() {
               {feed[0] && <ProfileCard key={feed[0]._id} user={feed[0]} />}
             </AnimatePresence>
           </div>
+        </div>
+
+        {/* Drag hint — sits below the card, fills some of the empty space with
+            something useful rather than more decoration */}
+        <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
+          <p className="text-xs text-muted-foreground/60">
+            Drag the card or use the buttons
+          </p>
         </div>
       </div>
     )
