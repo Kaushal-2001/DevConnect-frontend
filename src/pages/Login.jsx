@@ -14,8 +14,8 @@ export function Login() {
   // This just remembers whether the password should be visible or hidden.
   // false = hidden (default), true = visible
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("kaus@gmail.com");
-  const [password, setPassword] = useState("Kaus@123");
+  const [email, setEmail] = useState("rosa.delgado@example.com");
+  const [password, setPassword] = useState("Rosa@123");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
