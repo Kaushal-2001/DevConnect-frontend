@@ -70,7 +70,7 @@ export function Feed() {
 
   const getFeed = async () => {
     try {
-      const res = await axios.get(BASE_URL + "/feed", {
+      const res = await axios.get(BASE_URL + "/feed?limit=50", {
         withCredentials: true,
       });
       dispatch(addFeed(res.data));
